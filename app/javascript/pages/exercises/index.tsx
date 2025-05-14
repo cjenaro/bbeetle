@@ -40,7 +40,7 @@ export default function ExercisesIndex({
 				onChange={handleFilter}
 				className="input input-bordered w-full max-w-xs my-4"
 			/>
-			<div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+			<div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 				{exercises
 					.filter((ex) => ex.name.toLowerCase().includes(filter.toLowerCase()))
 					.map((ex) => (
@@ -60,7 +60,7 @@ ExercisesIndex.layout = (page: ReactNode) => <AuthLayout>{page}</AuthLayout>;
 
 function ExerciseCard({ id, name, description }: Exercise) {
 	return (
-		<div className="card bg-primary/5 text-primary-content w-96">
+		<div className="card bg-primary/5 text-primary-content">
 			<div className="card-body gap-5">
 				<div className="flex justify-between">
 					<h2 className="card-title">{name}</h2>
