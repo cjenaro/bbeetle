@@ -51,10 +51,7 @@ export default function NewSession({ errors }: { errors?: string }) {
 
           <p className="mt-6">
             Don't have an account?{" "}
-            <Link
-              className="hover:underline text-indigo-300"
-              href="/sessions/create"
-            >
+            <Link className="hover:underline text-indigo-300" href="/user/new">
               Sign up
             </Link>
           </p>
