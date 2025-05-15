@@ -62,6 +62,13 @@ class RoutinesController < ApplicationController
     redirect_to routines_path
   end
 
+  def activate
+    Routine.update_all(is_active: false)
+    routine = Routine.find(params[:id])
+    routine.update(is_active: true)
+    redirect_to routines_path
+  end
+
   private
 
   def routine_params

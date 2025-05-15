@@ -7,6 +7,9 @@ Rails.application.routes.draw do
     resources :days, only: [:create, :update, :destroy] do
       resources :blocks, only: [:create, :update, :destroy]
     end
+    member do
+      patch :activate
+    end
   end
   get 'inertia-example', to: 'inertia_example#index'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

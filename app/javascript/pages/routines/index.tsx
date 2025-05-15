@@ -93,12 +93,25 @@ function RoutineCard({ id, title, description, is_active }: Routine) {
 				<p className="text-zinc-500 dark:text-zinc-300 text-sm">
 					{description}
 				</p>
-				<p className="text-xs">
-					{is_active ? (
-						<span className="text-green-500">Active</span>
-					) : (
-						<span className="text-gray-400">Inactive</span>
-					)}
+				<p className="text-xs flex items-center gap-2">
+					<button
+						type="button"
+						className={`btn btn-xs flex items-center gap-1 ${
+							is_active ? "btn-success" : "btn-outline"
+						}`}
+						disabled={is_active}
+						onClick={() => {
+							if (!is_active) {
+								router.patch(`/routines/${id}/activate`);
+							}
+						}}
+					>
+						{is_active ? (
+							<span className="text-green-500 font-bold">Active</span>
+						) : (
+							<span className="text-gray-400">Set Active</span>
+						)}
+					</button>
 				</p>
 				<Link href={`/routines/${id}`} className="btn btn-outline w-fit">
 					<DocumentTextIcon className="w-4 h-4" />
