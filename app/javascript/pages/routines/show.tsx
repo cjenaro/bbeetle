@@ -2,6 +2,8 @@ import { Head, Link } from "@inertiajs/react";
 import type { ReactNode } from "react";
 import AuthLayout from "../../components/auth-layout";
 import { useState } from "react";
+import UnauthLayout from "../../components/unauth-layout";
+import { MinusIcon, PlusIcon } from "@heroicons/react/24/solid";
 
 type BlockExercise = {
 	exercise_id: number;
@@ -38,52 +40,51 @@ type Routine = {
 	days: Day[];
 };
 
-export default function RoutineShow({ routine }: { routine: Routine }) {
-	const [selectedDayId, setSelectedDayId] = useState(
-		routine.days[0]?.id ?? null,
-	);
-	const [expandedExercise, setExpandedExercise] = useState<{
-		[blockId: number]: number | null;
-	}>({});
-
+export default function RoutineShow({
+	routine,
+	user,
+}: {
+	routine: Routine;
+	user?: { id: number };
+}) {
+	const [selectedDayId, setSelectedDayId] = useState(routine.days[0].id);
 	const selectedDay = routine.days.find((d) => d.id === selectedDayId);
+	const isLoggedIn = user !== undefined;
 
 	return (
 		<>
 			<Head title={routine.title} />
-			<div className="mb-6">
-				<h1 className="text-3xl font-bold">{routine.title}</h1>
-				<p className="text-zinc-500 dark:text-zinc-300">
-					{routine.description}
-				</p>
-				<p className="text-xs mt-2">
+			<div className="mb-6 grid grid-cols-[auto_1fr] justify-items-start gap-4">
+				<h1 className="text-xl font-bold">{routine.title}</h1>
+				<p className="text-xs">
 					{routine.is_active ? (
-						<span className="text-green-500">Active</span>
+						<span className="badge badge-accent">Active</span>
 					) : (
-						<span className="text-gray-400">Inactive</span>
+						<span className="badge badge-secondary">Inactive</span>
 					)}
 				</p>
-				<Link
-					href={`/routines/${routine.id}/edit`}
-					className="btn btn-primary mt-4"
-				>
-					Edit Routine
-				</Link>
+
+				<p className="text-zinc-500 dark:text-zinc-300 col-span-2">
+					{routine.description}
+				</p>
+
+				{isLoggedIn && (
+					<Link
+						href={`/routines/${routine.id}/edit`}
+						className="btn btn-primary mt-4"
+					>
+						Edit Routine
+					</Link>
+				)}
 			</div>
-			<div className="mb-4 flex gap-2 overflow-x-auto">
+			<div role="tablist" className="tabs tabs-box mb-4 overflow-x-auto">
 				{routine.days.map((day) => (
 					<button
-						type="button"
+						role="tab"
 						key={day.id}
-						className={`px-4 py-2 rounded ${
-							day.id === selectedDayId
-								? "bg-blue-600 text-white"
-								: "bg-zinc-200 dark:bg-zinc-700"
-						}`}
-						onClick={() => {
-							setSelectedDayId(day.id);
-							setExpandedExercise({});
-						}}
+						className={`tab${day.id === selectedDayId ? " tab-active" : ""}`}
+						onClick={() => setSelectedDayId(day.id)}
+						type="button"
 					>
 						{day.name}
 					</button>
@@ -145,7 +146,11 @@ function ExerciseRow({ ex }: { ex: BlockExercise }) {
 						className="btn btn-sm btn-outline"
 						onClick={() => setExpanded((v) => !v)}
 					>
-						{expanded ? "Hide" : "See more"}
+						{expanded ? (
+							<MinusIcon className="size-4 text-current" />
+						) : (
+							<PlusIcon className="size-4 text-current" />
+						)}
 					</button>
 				</td>
 			</tr>
@@ -169,4 +174,11 @@ function ExerciseRow({ ex }: { ex: BlockExercise }) {
 	);
 }
 
-RoutineShow.layout = (page: ReactNode) => <AuthLayout>{page}</AuthLayout>;
+RoutineShow.layout = (
+	page: ReactNode & { props: { user?: { id: number } } },
+) =>
+	page.props.user ? (
+		<AuthLayout>{page}</AuthLayout>
+	) : (
+		<UnauthLayout>{page}</UnauthLayout>
+	);

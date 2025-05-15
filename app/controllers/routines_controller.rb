@@ -1,12 +1,13 @@
 class RoutinesController < ApplicationController
-  before_action :require_authentication
+  before_action :require_authentication, except: [:show]
+  before_action :resume_session, only: [:show] # add user but do not require it
   
   inertia_share do {
     user: {
       email_address: Current.user.email_address,
       id: Current.user.id
     }
-  }
+  } if Current.user.present?
   end
 
   def index

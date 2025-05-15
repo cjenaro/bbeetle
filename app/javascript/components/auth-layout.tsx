@@ -22,6 +22,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 					<Bars3Icon className="w-6 h-6" />
 				</label>
 				<div className="flex gap-2">
+					<Link href={`/user/${user.id}`} className="btn btn-secondary">
+						{user.email_address.split("@")[0]}
+					</Link>
 					<button
 						className="btn btn-ghost"
 						type="button"
@@ -29,9 +32,6 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 					>
 						Sign Out
 					</button>
-					<Link href={`/user/${user.id}`} className="btn btn-secondary">
-						{user.email_address.split("@")[0]}
-					</Link>
 				</div>
 			</header>
 			<aside className="drawer-side">
