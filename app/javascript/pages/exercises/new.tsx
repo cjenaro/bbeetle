@@ -18,24 +18,54 @@ export default function NewExercise({ errors = [] }: { errors: string[] }) {
 	return (
 		<>
 			<Head title="New Exercise" />
-			<form onSubmit={handleSubmit} encType="multipart/form-data">
-				<label>
-					Name:
-					<input name="exercise[name]" required />
-				</label>
-				<label>
-					Description:
-					<textarea name="exercise[description]" required />
-				</label>
-				<label>
-					Media (image or video):
-					<input type="file" accept="image/*,video/*" ref={fileInput} />
-				</label>
-				<button type="submit">Create Exercise</button>
+			<form
+				onSubmit={handleSubmit}
+				encType="multipart/form-data"
+				className="grid grid-cols-1 gap-4"
+			>
+				<fieldset className="fieldset">
+					<label className="label" htmlFor="exercise-name">
+						Name:
+					</label>
+					<input
+						className="input input-xl w-full"
+						id="exercise-name"
+						name="exercise[name]"
+						required
+					/>
+				</fieldset>
+				<fieldset className="fieldset">
+					<label className="label" htmlFor="exercise-description">
+						Description:
+					</label>
+					<textarea
+						className="textarea textarea-xl w-full"
+						id="exercise-description"
+						name="exercise[description]"
+						required
+					/>
+				</fieldset>
+				<fieldset className="fieldset">
+					<label className="label" htmlFor="exercise-media">
+						Media (image or video):
+					</label>
+					<input
+						type="file"
+						accept="image/*,video/*"
+						ref={fileInput}
+						id="exercise-media"
+						className="file-input file-input-bordered w-full"
+					/>
+				</fieldset>
+				<button type="submit" className="btn btn-primary">
+					Create Exercise
+				</button>
 				{errors.length > 0 && (
-					<ul>
+					<ul className="flex flex-col gap-2">
 						{errors.map((e) => (
-							<li key={e}>{e}</li>
+							<li key={e} className="text-red-500">
+								{e}
+							</li>
 						))}
 					</ul>
 				)}
