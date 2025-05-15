@@ -69,6 +69,15 @@ class RoutinesController < ApplicationController
     redirect_to routines_path
   end
 
+  def active
+    routine = Routine.find_by(is_active: true)
+    if routine
+      redirect_to routine_path(routine)
+    else
+      redirect_to routines_path, alert: "No active routine found."
+    end
+  end
+
   private
 
   def routine_params
