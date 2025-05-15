@@ -1,22 +1,32 @@
 import { Head, Link } from "@inertiajs/react";
 import type { ReactNode } from "react";
 import AuthLayout from "../../components/auth-layout";
+import { useState } from "react";
 
 type BlockExercise = {
 	exercise_id: number;
 	sets: number;
 	reps: number;
-	// Optionally, add exercise name if you preload it
-	exercise?: { name: string };
+	id: number;
+	exercise: Exercise;
+};
+
+type Exercise = {
+	id: number;
+	name: string;
+	description: string;
+	media_url?: string;
 };
 
 type Block = {
+	id: number;
 	title: string;
 	block_exercises: BlockExercise[];
 };
 
 type Day = {
 	id: number;
+	name: string;
 	blocks: Block[];
 };
 
@@ -29,6 +39,15 @@ type Routine = {
 };
 
 export default function RoutineShow({ routine }: { routine: Routine }) {
+	const [selectedDayId, setSelectedDayId] = useState(
+		routine.days[0]?.id ?? null,
+	);
+	const [expandedExercise, setExpandedExercise] = useState<{
+		[blockId: number]: number | null;
+	}>({});
+
+	const selectedDay = routine.days.find((d) => d.id === selectedDayId);
+
 	return (
 		<>
 			<Head title={routine.title} />
@@ -51,32 +70,101 @@ export default function RoutineShow({ routine }: { routine: Routine }) {
 					Edit Routine
 				</Link>
 			</div>
-			<div>
-				<h2 className="text-xl font-semibold mb-2">Days</h2>
-				{routine.days.length === 0 && <p>No days in this routine.</p>}
-				{routine.days.map((day, dayIdx) => (
-					<div key={day.id} className="mb-6">
-						<h3 className="font-bold mb-2">Day {dayIdx + 1}</h3>
-						{day.blocks.length === 0 && <p className="ml-4">No blocks.</p>}
-						{day.blocks.map((block, blockIdx) => (
-							<div key={blockIdx} className="ml-4 mb-2">
-								<div className="font-semibold">{block.title}</div>
-								{block.block_exercises.length === 0 && (
-									<p className="ml-4">No exercises.</p>
-								)}
-								<ul className="ml-4 list-disc">
-									{block.block_exercises.map((ex, exIdx) => (
-										<li key={exIdx}>
-											{ex.exercise?.name || `Exercise #${ex.exercise_id}`} —{" "}
-											{ex.sets} sets × {ex.reps} reps
-										</li>
-									))}
-								</ul>
+			<div className="mb-4 flex gap-2 overflow-x-auto">
+				{routine.days.map((day) => (
+					<button
+						type="button"
+						key={day.id}
+						className={`px-4 py-2 rounded ${
+							day.id === selectedDayId
+								? "bg-blue-600 text-white"
+								: "bg-zinc-200 dark:bg-zinc-700"
+						}`}
+						onClick={() => {
+							setSelectedDayId(day.id);
+							setExpandedExercise({});
+						}}
+					>
+						{day.name}
+					</button>
+				))}
+			</div>
+			{!selectedDay ? (
+				<p>No day selected.</p>
+			) : (
+				<div>
+					{selectedDay.blocks.length === 0 && <p>No blocks.</p>}
+					<div className="join join-vertical bg-base-100 w-full">
+						{selectedDay.blocks.map((block) => (
+							<div
+								key={block.id}
+								className="collapse collapse-arrow join-item border-base-300 border"
+							>
+								<input type="radio" name="block-accordion" />
+								<div className="collapse-title font-semibold">
+									{block.title}
+								</div>
+								<div className="collapse-content text-sm">
+									{block.block_exercises.length === 0 && <p>No exercises.</p>}
+									<table className="table table-zebra w-full">
+										<thead>
+											<tr>
+												<th>Name</th>
+												<th>Sets</th>
+												<th>Reps</th>
+												<th />
+											</tr>
+										</thead>
+										<tbody>
+											{block.block_exercises.map((ex) => (
+												<ExerciseRow key={ex.id} ex={ex} />
+											))}
+										</tbody>
+									</table>
+								</div>
 							</div>
 						))}
 					</div>
-				))}
-			</div>
+				</div>
+			)}
+		</>
+	);
+}
+
+function ExerciseRow({ ex }: { ex: BlockExercise }) {
+	const [expanded, setExpanded] = useState(false);
+	return (
+		<>
+			<tr>
+				<td>{ex.exercise.name}</td>
+				<td className="text-center">{ex.sets}</td>
+				<td className="text-center">{ex.reps}</td>
+				<td className="text-right">
+					<button
+						type="button"
+						className="btn btn-sm btn-outline"
+						onClick={() => setExpanded((v) => !v)}
+					>
+						{expanded ? "Hide" : "See more"}
+					</button>
+				</td>
+			</tr>
+			{expanded && (
+				<tr>
+					<td colSpan={4} className="bg-zinc-50 dark:bg-zinc-800 p-4">
+						<p className="text-zinc-500 mb-2">{ex.exercise.description}</p>
+						{ex.exercise.media_url && (
+							<div className="mt-2">
+								<img
+									src={ex.exercise.media_url}
+									alt={ex.exercise.name}
+									className="max-w-xs rounded"
+								/>
+							</div>
+						)}
+					</td>
+				</tr>
+			)}
 		</>
 	);
 }

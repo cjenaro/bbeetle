@@ -115,7 +115,11 @@ class RoutinesController < ApplicationController
         days: {
           include: {
             blocks: {
-              include: :block_exercises
+              include: {
+                block_exercises: {
+                  include: :exercise
+                }
+              }
             }
           }
         }
