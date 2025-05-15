@@ -52,7 +52,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 							href="/"
 							className="btn btn-outline border-secondary/30 group"
 						>
-							Home{" "}
+							Dashboard{" "}
 							<span className="ml-2 group-hover:translate-x-1 transition-transform duration-100 text-secondary">
 								&rarr;
 							</span>
@@ -64,6 +64,17 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 							className="btn btn-outline border-secondary/30 group"
 						>
 							Exercises{" "}
+							<span className="ml-2 group-hover:translate-x-1 transition-transform duration-100 text-secondary">
+								&rarr;
+							</span>
+						</Link>
+					</li>
+					<li>
+						<Link
+							href="/routines"
+							className="btn btn-outline border-secondary/30 group"
+						>
+							Routines{" "}
 							<span className="ml-2 group-hover:translate-x-1 transition-transform duration-100 text-secondary">
 								&rarr;
 							</span>
