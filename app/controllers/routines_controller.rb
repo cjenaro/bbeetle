@@ -16,7 +16,9 @@ class RoutinesController < ApplicationController
 
   def show
     routine = Routine.includes(days: { blocks: :block_exercises }).find(params[:id])
-    render inertia: 'routines/show', props: { routine: routine }
+    render inertia: 'routines/show', props: {
+      routine: routine_with_nested(routine)
+    }
   end
 
   def new
@@ -28,9 +30,21 @@ class RoutinesController < ApplicationController
   def edit
     routine = Routine.includes(days: { blocks: :block_exercises }).find(params[:id])
     render inertia: 'routines/edit', props: {
-      routine: routine,
+      routine: routine_with_nested(routine),
       exercises: Exercise.all
     }
+  end
+
+  def update
+    routine = Routine.find(params[:id])
+    if routine.update(routine_params)
+      redirect_to routine_path(routine)
+    else
+      render inertia: 'routines/edit', props: {
+        routine: routine_with_nested(routine),
+        exercises: Exercise.all
+      }
+    end
   end
 
   def create
@@ -41,6 +55,12 @@ class RoutinesController < ApplicationController
       render inertia: 'routines/new', props: { errors: routine.errors }
     end
   end
+  
+  def destroy
+    routine = Routine.find(params[:id])
+    routine.destroy
+    redirect_to routines_path
+  end
 
   private
 
@@ -48,10 +68,10 @@ class RoutinesController < ApplicationController
     permitted = params.permit(
       :title, :description, :is_active,
       days: [
-        :name,
+        :id, :name, :_destroy,
         blocks: [
-          :title,
-          block_exercises: [:exercise_id, :sets, :reps]
+          :id, :title, :_destroy,
+          block_exercises: [:id, :exercise_id, :sets, :reps, :_destroy]
         ]
       ]
     ).to_h
@@ -80,5 +100,19 @@ class RoutinesController < ApplicationController
         end
       end
     end
+  end
+
+  def routine_with_nested(routine)
+    routine.as_json(
+      include: {
+        days: {
+          include: {
+            blocks: {
+              include: :block_exercises
+            }
+          }
+        }
+      }
+    )
   end
 end
