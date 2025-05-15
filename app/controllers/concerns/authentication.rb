@@ -49,4 +49,8 @@ module Authentication
       Current.session.destroy
       cookies.delete(:session_id)
     end
+
+    def require_teacher
+      redirect_to request.referrer || root_path, alert: "Not authorized" unless Current.user&.teacher?
+    end
 end

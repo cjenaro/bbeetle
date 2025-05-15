@@ -1,5 +1,6 @@
 class RoutinesController < ApplicationController
   before_action :require_authentication, except: [:show, :active]
+  before_action :require_teacher, except: [:show, :active]
   before_action :resume_session, only: [:show, :active] # add user but do not require it
   
   inertia_share do {

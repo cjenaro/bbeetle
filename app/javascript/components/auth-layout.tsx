@@ -1,10 +1,18 @@
 import { Link, router, usePage } from "@inertiajs/react";
 import type { ReactNode } from "react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
+import {
+	Bars3Icon,
+	BellAlertIcon,
+	InformationCircleIcon,
+	XMarkIcon,
+} from "@heroicons/react/24/solid";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
-	const { user } = usePage<{ user: { id: number; email_address: string } }>()
-		.props;
+	const { user, alert, notice } = usePage<{
+		user: { id: number; email_address: string };
+		alert?: string;
+		notice?: string;
+	}>().props;
 
 	function handleSignOut() {
 		router.delete("/session");
@@ -12,6 +20,38 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
 	return (
 		<div className="grid grid-rows-[auto_1fr] h-full min-h-screen">
+			{alert && (
+				<div
+					role="alert"
+					className="alert alert-error fixed top-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-96"
+				>
+					<BellAlertIcon className="size-6 text-current" />
+					<span>{alert}</span>
+					<button
+						type="button"
+						className="btn btn-ghost btn-square"
+						onClick={() => router.reload()}
+					>
+						<XMarkIcon className="size-6 text-current" />
+					</button>
+				</div>
+			)}
+			{notice && (
+				<div
+					role="alert"
+					className="alert alert-success fixed top-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-96"
+				>
+					<InformationCircleIcon className="size-6 text-current" />
+					<span>{notice}</span>
+					<button
+						type="button"
+						className="btn btn-ghost btn-square"
+						onClick={() => router.reload()}
+					>
+						<XMarkIcon className="size-6 text-current" />
+					</button>
+				</div>
+			)}
 			<input type="checkbox" id="drawer" className="drawer-toggle" />
 			<header className="flex p-4 bg-white/10 justify-between items-center gap-4">
 				<label

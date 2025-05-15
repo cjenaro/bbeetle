@@ -1,5 +1,6 @@
 class ExercisesController < ApplicationController
   before_action :require_authentication
+  before_action :require_teacher
   
   inertia_share do {
     user: {
