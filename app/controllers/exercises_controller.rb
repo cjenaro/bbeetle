@@ -1,4 +1,6 @@
 class ExercisesController < ApplicationController
+  before_action :require_authentication
+  
   inertia_share do {
     user: {
       email_address: Current.user.email_address,

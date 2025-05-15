@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_14_202507) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_15_141738) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -39,9 +39,46 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_202507) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "block_exercises", force: :cascade do |t|
+    t.integer "block_id", null: false
+    t.integer "exercise_id", null: false
+    t.integer "sets"
+    t.integer "reps"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["block_id"], name: "index_block_exercises_on_block_id"
+    t.index ["exercise_id"], name: "index_block_exercises_on_exercise_id"
+  end
+
+  create_table "blocks", force: :cascade do |t|
+    t.integer "day_id", null: false
+    t.string "title"
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["day_id"], name: "index_blocks_on_day_id"
+  end
+
+  create_table "days", force: :cascade do |t|
+    t.integer "routine_id", null: false
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "name"
+    t.index ["routine_id"], name: "index_days_on_routine_id"
+  end
+
   create_table "exercises", force: :cascade do |t|
     t.string "name"
     t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "routines", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.boolean "is_active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -65,5 +102,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_202507) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "block_exercises", "blocks"
+  add_foreign_key "block_exercises", "exercises"
+  add_foreign_key "blocks", "days"
+  add_foreign_key "days", "routines"
   add_foreign_key "sessions", "users"
 end

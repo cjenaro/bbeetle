@@ -3,6 +3,11 @@ Rails.application.routes.draw do
   resource :user
   resources :passwords, param: :token
   resources :exercises
+  resources :routines do
+    resources :days, only: [:create, :update, :destroy] do
+      resources :blocks, only: [:create, :update, :destroy]
+    end
+  end
   get 'inertia-example', to: 'inertia_example#index'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -15,5 +20,5 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "inertia_example#index"
+  root "routines#index"
 end

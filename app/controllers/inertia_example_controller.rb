@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class InertiaExampleController < ApplicationController
+  before_action :require_authentication
 
   inertia_share do {
     user: {
