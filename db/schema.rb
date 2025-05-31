@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_15_183832) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_15_190000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -43,9 +43,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_183832) do
     t.integer "block_id", null: false
     t.integer "exercise_id", null: false
     t.integer "sets"
-    t.integer "reps"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "weeks_count", default: 1
+    t.json "weekly_reps", default: {}
     t.index ["block_id"], name: "index_block_exercises_on_block_id"
     t.index ["exercise_id"], name: "index_block_exercises_on_exercise_id"
   end

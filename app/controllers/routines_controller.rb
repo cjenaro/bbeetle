@@ -18,8 +18,12 @@ class RoutinesController < ApplicationController
 
   def show
     routine = Routine.includes(days: { blocks: :block_exercises }).find(params[:id])
+    current_week = params[:week]&.to_i || 1
+    current_week = 1 if current_week < 1
+    
     render inertia: 'routines/show', props: {
-      routine: routine_with_nested(routine)
+      routine: routine_with_nested(routine),
+      current_week: current_week
     }
   end
 
@@ -54,7 +58,7 @@ class RoutinesController < ApplicationController
     if routine.save
       redirect_to routine_path(routine)
     else
-      render inertia: 'routines/new', props: { errors: routine.errors }
+      render inertia: 'routines/new', props: { errors: routine.errors, exercises: Exercise.all }
     end
   end
   
@@ -89,7 +93,7 @@ class RoutinesController < ApplicationController
         :id, :name, :_destroy,
         blocks: [
           :id, :title, :_destroy,
-          block_exercises: [:id, :exercise_id, :sets, :reps, :_destroy]
+          block_exercises: [:id, :exercise_id, :sets, :weeks_count, :_destroy, weekly_reps: []]
         ]
       ]
     ).to_h

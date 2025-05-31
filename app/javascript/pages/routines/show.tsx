@@ -8,7 +8,8 @@ import { MinusIcon, PlusIcon } from "@heroicons/react/24/solid";
 type BlockExercise = {
 	exercise_id: number;
 	sets: number;
-	reps: number;
+	weeks_count: number;
+	weekly_reps: number[] | Record<string, number>; // Support both formats for backward compatibility
 	id: number;
 	exercise: Exercise;
 };
@@ -43,13 +44,38 @@ type Routine = {
 export default function RoutineShow({
 	routine,
 	user,
+	current_week = 1,
 }: {
 	routine: Routine;
 	user?: { id: number };
+	current_week?: number;
 }) {
 	const [selectedDayId, setSelectedDayId] = useState(routine.days[0].id);
+	const [selectedWeek, setSelectedWeek] = useState(current_week);
 	const selectedDay = routine.days.find((d) => d.id === selectedDayId);
 	const isLoggedIn = user !== undefined;
+
+	// Get the maximum weeks across all exercises to show in week selector
+	const maxWeeks = selectedDay
+		? Math.max(
+				...selectedDay.blocks.flatMap((block) =>
+					block.block_exercises.map((ex) => ex.weeks_count || 1),
+				),
+				1,
+			)
+		: 1;
+
+	const getRepsForWeek = (exercise: BlockExercise) => {
+		// New array format
+		if (Array.isArray(exercise.weekly_reps)) {
+			return exercise.weekly_reps[selectedWeek - 1] || 10;
+		}
+
+		// Legacy object format
+		const weekKey = `week_${selectedWeek}`;
+		const legacyReps = exercise.weekly_reps as Record<string, number>;
+		return legacyReps[weekKey] || legacyReps.week_1 || 10;
+	};
 
 	return (
 		<>
@@ -77,6 +103,26 @@ export default function RoutineShow({
 					</Link>
 				)}
 			</div>
+
+			{/* Week Selector */}
+			<div className="mb-4">
+				<label htmlFor="week-select" className="block text-sm font-medium mb-2">
+					Select Week (max {maxWeeks} weeks)
+				</label>
+				<select
+					id="week-select"
+					value={selectedWeek}
+					onChange={(e) => setSelectedWeek(Number(e.target.value))}
+					className="select select-bordered"
+				>
+					{Array.from({ length: maxWeeks }, (_, i) => i + 1).map((week) => (
+						<option key={week} value={week}>
+							Week {week}
+						</option>
+					))}
+				</select>
+			</div>
+
 			<div role="tablist" className="tabs tabs-box mb-4 overflow-x-auto">
 				{routine.days.map((day) => (
 					<button
@@ -112,13 +158,19 @@ export default function RoutineShow({
 											<tr>
 												<th>Name</th>
 												<th>Sets</th>
-												<th>Reps</th>
+												<th>Reps (Week {selectedWeek})</th>
+												<th>Weeks</th>
 												<th />
 											</tr>
 										</thead>
 										<tbody>
 											{block.block_exercises.map((ex) => (
-												<ExerciseRow key={ex.id} ex={ex} />
+												<ExerciseRow
+													key={ex.id}
+													ex={ex}
+													selectedWeek={selectedWeek}
+													getRepsForWeek={getRepsForWeek}
+												/>
 											))}
 										</tbody>
 									</table>
@@ -132,14 +184,37 @@ export default function RoutineShow({
 	);
 }
 
-function ExerciseRow({ ex }: { ex: BlockExercise }) {
+function ExerciseRow({
+	ex,
+	selectedWeek,
+	getRepsForWeek,
+}: {
+	ex: BlockExercise;
+	selectedWeek: number;
+	getRepsForWeek: (exercise: BlockExercise) => number;
+}) {
 	const [expanded, setExpanded] = useState(false);
+	const hasProgression = ex.weeks_count > 1;
+	const isWeekAvailable = selectedWeek <= ex.weeks_count;
+
 	return (
 		<>
-			<tr>
+			<tr className={!isWeekAvailable ? "opacity-50" : ""}>
 				<td>{ex.exercise.name}</td>
 				<td className="text-center">{ex.sets}</td>
-				<td className="text-center">{ex.reps}</td>
+				<td className="text-center">
+					{isWeekAvailable ? getRepsForWeek(ex) : "-"}
+					{!isWeekAvailable && (
+						<span className="text-xs text-gray-500 ml-1">(N/A)</span>
+					)}
+				</td>
+				<td className="text-center">
+					<span
+						className={`badge ${hasProgression ? "badge-primary" : "badge-neutral"} badge-sm`}
+					>
+						{ex.weeks_count} week{ex.weeks_count !== 1 ? "s" : ""}
+					</span>
+				</td>
 				<td className="text-right">
 					<button
 						type="button"
@@ -156,8 +231,50 @@ function ExerciseRow({ ex }: { ex: BlockExercise }) {
 			</tr>
 			{expanded && (
 				<tr>
-					<td colSpan={4} className="bg-zinc-50 dark:bg-zinc-800 p-4">
+					<td colSpan={5} className="bg-zinc-50 dark:bg-zinc-800 p-4">
 						<p className="text-zinc-500 mb-2">{ex.exercise.description}</p>
+						{hasProgression && (
+							<div className="mt-3">
+								<h4 className="font-semibold text-sm mb-2">
+									Weekly Progression:
+								</h4>
+								<div
+									className="grid gap-2 text-xs"
+									style={{
+										gridTemplateColumns: `repeat(${ex.weeks_count}, 1fr)`,
+									}}
+								>
+									{Array.from({ length: ex.weeks_count }, (_, i) => {
+										const weekNum = i + 1;
+										let reps = 0;
+
+										// Handle both array and object formats
+										if (Array.isArray(ex.weekly_reps)) {
+											reps = ex.weekly_reps[i] || 0;
+										} else {
+											const weekKey = `week_${weekNum}`;
+											const legacyReps = ex.weekly_reps as Record<
+												string,
+												number
+											>;
+											reps = legacyReps[weekKey] || 0;
+										}
+
+										const isCurrentWeek = weekNum === selectedWeek;
+
+										return (
+											<div
+												key={weekNum}
+												className={`text-center p-2 rounded ${isCurrentWeek ? "bg-primary text-primary-content" : "bg-base-200"}`}
+											>
+												<div className="font-semibold">Week {weekNum}</div>
+												<div>{reps} reps</div>
+											</div>
+										);
+									})}
+								</div>
+							</div>
+						)}
 						{ex.exercise.media_url && (
 							<div className="mt-2">
 								<img
