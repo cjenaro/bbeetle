@@ -2,7 +2,11 @@ Rails.application.routes.draw do
   resource :session
   resource :user
   resources :passwords, param: :token
-  resources :exercises
+  resources :exercises do
+    member do
+      delete :delete_media
+    end
+  end
   resources :routines do
     resources :days, only: [:create, :update, :destroy] do
       resources :blocks, only: [:create, :update, :destroy]
