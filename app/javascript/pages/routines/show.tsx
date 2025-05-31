@@ -104,23 +104,23 @@ export default function RoutineShow({
 				)}
 			</div>
 
-			{/* Week Selector */}
 			<div className="mb-4">
-				<label htmlFor="week-select" className="block text-sm font-medium mb-2">
-					Select Week (max {maxWeeks} weeks)
-				</label>
-				<select
-					id="week-select"
-					value={selectedWeek}
-					onChange={(e) => setSelectedWeek(Number(e.target.value))}
-					className="select select-bordered"
-				>
+				<span className="text-sm font-medium mb-2">
+					Week {selectedWeek} of {maxWeeks}
+				</span>
+				<div role="tablist" className="tabs tabs-box overflow-x-auto">
 					{Array.from({ length: maxWeeks }, (_, i) => i + 1).map((week) => (
-						<option key={week} value={week}>
+						<button
+							role="tab"
+							key={week}
+							className={`tab${week === selectedWeek ? " tab-active" : ""}`}
+							onClick={() => setSelectedWeek(week)}
+							type="button"
+						>
 							Week {week}
-						</option>
+						</button>
 					))}
-				</select>
+				</div>
 			</div>
 
 			<div role="tablist" className="tabs tabs-box mb-4 overflow-x-auto">
@@ -159,7 +159,6 @@ export default function RoutineShow({
 												<th>Name</th>
 												<th>Sets</th>
 												<th>Reps (Week {selectedWeek})</th>
-												<th>Weeks</th>
 												<th />
 											</tr>
 										</thead>
@@ -194,7 +193,6 @@ function ExerciseRow({
 	getRepsForWeek: (exercise: BlockExercise) => number;
 }) {
 	const [expanded, setExpanded] = useState(false);
-	const hasProgression = ex.weeks_count > 1;
 	const isWeekAvailable = selectedWeek <= ex.weeks_count;
 
 	return (
@@ -207,13 +205,6 @@ function ExerciseRow({
 					{!isWeekAvailable && (
 						<span className="text-xs text-gray-500 ml-1">(N/A)</span>
 					)}
-				</td>
-				<td className="text-center">
-					<span
-						className={`badge ${hasProgression ? "badge-primary" : "badge-neutral"} badge-sm`}
-					>
-						{ex.weeks_count} week{ex.weeks_count !== 1 ? "s" : ""}
-					</span>
 				</td>
 				<td className="text-right">
 					<button
@@ -231,50 +222,8 @@ function ExerciseRow({
 			</tr>
 			{expanded && (
 				<tr>
-					<td colSpan={5} className="bg-zinc-50 dark:bg-zinc-800 p-4">
+					<td colSpan={4} className="bg-zinc-50 dark:bg-zinc-800 p-4">
 						<p className="text-zinc-500 mb-2">{ex.exercise.description}</p>
-						{hasProgression && (
-							<div className="mt-3">
-								<h4 className="font-semibold text-sm mb-2">
-									Weekly Progression:
-								</h4>
-								<div
-									className="grid gap-2 text-xs"
-									style={{
-										gridTemplateColumns: `repeat(${ex.weeks_count}, 1fr)`,
-									}}
-								>
-									{Array.from({ length: ex.weeks_count }, (_, i) => {
-										const weekNum = i + 1;
-										let reps = 0;
-
-										// Handle both array and object formats
-										if (Array.isArray(ex.weekly_reps)) {
-											reps = ex.weekly_reps[i] || 0;
-										} else {
-											const weekKey = `week_${weekNum}`;
-											const legacyReps = ex.weekly_reps as Record<
-												string,
-												number
-											>;
-											reps = legacyReps[weekKey] || 0;
-										}
-
-										const isCurrentWeek = weekNum === selectedWeek;
-
-										return (
-											<div
-												key={weekNum}
-												className={`text-center p-2 rounded ${isCurrentWeek ? "bg-primary text-primary-content" : "bg-base-200"}`}
-											>
-												<div className="font-semibold">Week {weekNum}</div>
-												<div>{reps} reps</div>
-											</div>
-										);
-									})}
-								</div>
-							</div>
-						)}
 						{ex.exercise.media_url && (
 							<div className="mt-2">
 								<img
