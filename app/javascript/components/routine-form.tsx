@@ -11,6 +11,7 @@ import { z } from "zod";
 import { useState } from "react";
 import type { Errors } from "@inertiajs/core";
 import { router } from "@inertiajs/react";
+import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 const BlockExerciseSchema = z.object({
 	id: z.number().optional(),
@@ -167,7 +168,7 @@ function ExerciseRow({
 									className="btn btn-error btn-xs"
 									disabled={block.block_exercises.getFieldList().length === 1}
 								>
-									Remove Exercise
+									<TrashIcon className="w-4 h-4" />
 								</button>
 							</div>
 						</div>
@@ -216,7 +217,7 @@ function BlockSection({
 								className="btn btn-error btn-xs"
 								disabled={day.blocks.getFieldList().length === 1}
 							>
-								Remove Block
+								<TrashIcon className="w-4 h-4" />
 							</button>
 						</div>
 
@@ -235,9 +236,9 @@ function BlockSection({
 								{...form.insert.getButtonProps({
 									name: block.block_exercises.name,
 								})}
-								className="btn btn-secondary btn-xs mt-1"
+								className="btn btn-primary btn-xs mt-1"
 							>
-								Add Exercise
+								<PlusIcon className="size-4" /> Exercise
 							</button>
 						</fieldset>
 					</div>
@@ -283,7 +284,7 @@ function DaySection({
 								className="btn btn-error btn-xs"
 								disabled={daysField.getFieldList().length === 1}
 							>
-								Remove Day
+								<TrashIcon className="size-4" />
 							</button>
 						</div>
 
@@ -301,7 +302,7 @@ function DaySection({
 								{...form.insert.getButtonProps({ name: day.blocks.name })}
 								className="btn btn-primary btn-xs mt-2"
 							>
-								Add Block
+								<PlusIcon className="size-4" /> Block
 							</button>
 						</fieldset>
 					</div>
@@ -377,7 +378,7 @@ export function RoutineForm({
 					{...form.insert.getButtonProps({ name: fields.days.name })}
 					className="btn btn-primary"
 				>
-					Add Day
+					<PlusIcon className="size-4" /> Day
 				</button>
 			</fieldset>
 

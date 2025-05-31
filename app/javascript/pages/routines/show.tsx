@@ -156,9 +156,9 @@ export default function RoutineShow({
 									<table className="table table-zebra w-full">
 										<thead>
 											<tr>
-												<th>Name</th>
-												<th>Sets</th>
-												<th>Reps (Week {selectedWeek})</th>
+												<th className="text-left">Name</th>
+												<th className="text-center">Sets</th>
+												<th className="text-center">Reps</th>
 												<th />
 											</tr>
 										</thead>

@@ -1,4 +1,4 @@
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import AuthLayout from "../../components/auth-layout";
@@ -7,6 +7,7 @@ import {
 	TrashIcon,
 	DocumentTextIcon,
 } from "@heroicons/react/24/outline";
+import DeleteExerciseModal from "./modal.tsx";
 
 type Exercise = {
 	id: number;
@@ -20,9 +21,19 @@ export default function ExercisesIndex({
 	exercises: Exercise[];
 }) {
 	const [filter, setFilter] = useState("");
+	const [exerciseToDelete, setExerciseToDelete] = useState<Exercise | null>(
+		null,
+	);
 
 	function handleFilter(e: React.ChangeEvent<HTMLInputElement>) {
 		setFilter(e.target.value);
+	}
+
+	function openDeleteModal(exercise: Exercise) {
+		setExerciseToDelete(exercise);
+		(
+			document.getElementById("delete_exercise_modal") as HTMLDialogElement
+		)?.showModal();
 	}
 
 	return (
@@ -46,19 +57,31 @@ export default function ExercisesIndex({
 					.map((ex) => (
 						<ExerciseCard
 							key={ex.id}
-							id={ex.id}
-							name={ex.name}
-							description={ex.description}
+							{...ex}
+							onDelete={() => openDeleteModal(ex)}
 						/>
 					))}
 			</div>
+
+			{exerciseToDelete && (
+				<DeleteExerciseModal
+					id="delete_exercise_modal"
+					exerciseId={exerciseToDelete.id}
+					exerciseName={exerciseToDelete.name}
+				/>
+			)}
 		</>
 	);
 }
 
 ExercisesIndex.layout = (page: ReactNode) => <AuthLayout>{page}</AuthLayout>;
 
-function ExerciseCard({ id, name, description }: Exercise) {
+function ExerciseCard({
+	id,
+	name,
+	description,
+	onDelete,
+}: Exercise & { onDelete: () => void }) {
 	return (
 		<div className="card bg-primary/5 text-primary-content">
 			<div className="card-body gap-5">
@@ -72,7 +95,7 @@ function ExerciseCard({ id, name, description }: Exercise) {
 							<PencilIcon className="w-4 h-4" />
 						</Link>
 						<button
-							onClick={() => router.delete(`/exercises/${id}`)}
+							onClick={onDelete}
 							className="btn btn-error btn-sm bg-red-400/20 text-red-400"
 							aria-label="Delete"
 							type="button"
