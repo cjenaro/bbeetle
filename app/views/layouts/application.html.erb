@@ -11,11 +11,30 @@
     <%= yield :head %>
 
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16">
+    <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96">
+    <link rel="icon" href="/favicon-128.png" type="image/png" sizes="128x128">
+    <link rel="icon" href="/favicon-196x196.png" type="image/png" sizes="196x196">
+    
+    <link rel="apple-touch-icon" href="/apple-touch-icon-57x57.png" sizes="57x57">
+    <link rel="apple-touch-icon" href="/apple-touch-icon-60x60.png" sizes="60x60">
+    <link rel="apple-touch-icon" href="/apple-touch-icon-72x72.png" sizes="72x72">
+    <link rel="apple-touch-icon" href="/apple-touch-icon-76x76.png" sizes="76x76">
+    <link rel="apple-touch-icon" href="/apple-touch-icon-114x114.png" sizes="114x114">
+    <link rel="apple-touch-icon" href="/apple-touch-icon-120x120.png" sizes="120x120">
+    <link rel="apple-touch-icon" href="/apple-touch-icon-144x144.png" sizes="144x144">
+    <link rel="apple-touch-icon" href="/apple-touch-icon-152x152.png" sizes="152x152">
+    
+    <meta name="msapplication-TileColor" content="#FFD700">
+    <meta name="msapplication-square70x70logo" content="/mstile-70x70.png">
+    <meta name="msapplication-square150x150logo" content="/mstile-150x150.png">
+    <meta name="msapplication-wide310x150logo" content="/mstile-310x150.png">
+    <meta name="msapplication-square310x310logo" content="/mstile-310x310.png">
+    <meta name="theme-color" content="#FFD700">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
