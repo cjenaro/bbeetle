@@ -16,7 +16,7 @@ exercises = [
   { name: "Drop Jump", description: "Salto pliométrico descendiendo desde una plataforma o caja." },
   { name: "Salto Con Cargo PCS, PC", description: "Salto con carga, posiblemente con barra o peso adicional (PCS/PC hace referencia a la posición o tipo de carga)." },
   { name: "Saltos Antirrotación con Banda, posición de plan de asimétrica", description: "Saltos con banda elástica evitando la rotación, desde posición de plancha asimétrica." },
-  { name: "Ramos Pendlay", description: "Remo Pendlay, remo con barra desde el suelo de forma explosiva." },
+  { name: "Remos Pendlay", description: "Remo Pendlay, remo con barra desde el suelo de forma explosiva." },
   { name: "Biceps 1 brazo dinamico & Isom Isometrico", description: "Curl de bíceps a un brazo combinando fases dinámicas e isométricas." },
   { name: "Vueltas combinadas", description: "Ejercicio de rotación o giro del torso, combinando diferentes direcciones." },
   { name: "Caminata griega y con el peso corporal", description: "Caminata funcional usando solo el peso corporal, estilo griego." },
@@ -64,85 +64,176 @@ def ex_id(name)
   Exercise.find_by!(name: name).id
 end
 
+def create_weeks_for_block(block, exercises_data)
+  # Create 4 weeks for each block
+  (1..4).each do |week_num|
+    week = block.weeks.find_or_create_by!(week_number: week_num)
+    
+    # Create week exercises for each exercise in this block
+    exercises_data.each do |exercise_data|
+      exercise_id = exercise_data[:exercise_id]
+      sets = exercise_data[:sets]
+      reps = exercise_data[:reps]
+      
+      week.week_exercises.find_or_create_by!(exercise_id: exercise_id) do |we|
+        we.sets = sets
+        we.reps = reps
+      end
+    end
+  end
+end
+
 routine = Routine.find_or_create_by!(title: "Rutina PDF", description: "Rutina importada del PDF", is_active: false)
 
 # === Día 1 ===
 day1 = routine.days.find_or_create_by!(name: "Día 1")
+
 bloque1 = day1.blocks.find_or_create_by!(title: "Bloque 1")
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Pogos mas Tuck Avanzado 10MTS"), sets: 2, reps: 10)
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Lanzamiento Rotacional por encima de la cabeza"), sets: 2, reps: 8)
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Posicion Aceleracion Cargo Rompe"), sets: 2, reps: 3)
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Sentadillas"), sets: 4, reps: 1)
+bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Pogos mas Tuck Avanzado 10MTS"))
+bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Lanzamiento Rotacional por encima de la cabeza"))
+bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Posicion Aceleracion Cargo Rompe"))
+create_weeks_for_block(bloque1, [
+  { exercise_id: ex_id("Pogos mas Tuck Avanzado 10MTS"), sets: 2, reps: 10 },
+  { exercise_id: ex_id("Lanzamiento Rotacional por encima de la cabeza"), sets: 2, reps: 8 },
+  { exercise_id: ex_id("Posicion Aceleracion Cargo Rompe"), sets: 2, reps: 3 }
+])
 
 bloque2 = day1.blocks.find_or_create_by!(title: "Bloque 2")
-bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Drop Jump"), sets: 4, reps: 3)
-bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Salto Con Cargo PCS, PC"), sets: 4, reps: 3)
-bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Saltos Antirrotación con Banda, posición de plan de asimétrica"), sets: 4, reps: 3)
-bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Ramos Pendlay"), sets: 4, reps: 8)
+bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Sentadillas"))
+bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Drop Jump"))
+bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Salto Con Cargo PCS, PC"))
+create_weeks_for_block(bloque2, [
+  { exercise_id: ex_id("Sentadillas"), sets: 5, reps: 3 },
+  { exercise_id: ex_id("Drop Jump"), sets: 4, reps: 3 },
+  { exercise_id: ex_id("Salto Con Cargo PCS, PC"), sets: 4, reps: 3 }
+])
 
 bloque3 = day1.blocks.find_or_create_by!(title: "Bloque 3")
-bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Biceps 1 brazo dinamico & Isom Isometrico"), sets: 3, reps: 10)
-bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Vueltas combinadas"), sets: 3, reps: 15)
-bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Caminata griega y con el peso corporal"), sets: 3, reps: 15)
-bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Cuello banda (alternando direcciones)"), sets: 3, reps: 10)
+bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Remos Pendlay"))
+bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Biceps 1 brazo dinamico & Isom Isometrico"))
+bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Press inclinado"))
+create_weeks_for_block(bloque3, [
+  { exercise_id: ex_id("Remos Pendlay"), sets: 4, reps: 8 },
+  { exercise_id: ex_id("Biceps 1 brazo dinamico & Isom Isometrico"), sets: 3, reps: 10 },
+  { exercise_id: ex_id("Press inclinado"), sets: 3, reps: 15 }
+])
 
 # === Día 2 ===
 day2 = routine.days.find_or_create_by!(name: "Día 2")
+
 bloque1 = day2.blocks.find_or_create_by!(title: "Bloque 1")
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Caida de Cajon (Recepcion de peso)"), sets: 2, reps: 8)
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Face Pull TRX"), sets: 2, reps: 8)
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Iso Push Unilateral"), sets: 2, reps: 3)
+bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Caida de Cajon (Recepcion de peso)"))
+bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Face Pull TRX"))
+bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Iso Push Unilateral"))
+create_weeks_for_block(bloque1, [
+  { exercise_id: ex_id("Caida de Cajon (Recepcion de peso)"), sets: 2, reps: 8 },
+  { exercise_id: ex_id("Face Pull TRX"), sets: 2, reps: 8 },
+  { exercise_id: ex_id("Iso Push Unilateral"), sets: 2, reps: 3 }
+])
 
 bloque2 = day2.blocks.find_or_create_by!(title: "Bloque 2")
-bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Hip Thrust"), sets: 4, reps: 1)
-bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Salto largo"), sets: 4, reps: 3)
-bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Sprint 5 a 10 mts"), sets: 4, reps: 3)
-bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Press banca"), sets: 4, reps: 6)
+bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Hip Thrust"))
+bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Salto largo"))
+bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Sprint 5 a 10 mts"))
+bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Press banca"))
+create_weeks_for_block(bloque2, [
+  { exercise_id: ex_id("Hip Thrust"), sets: 4, reps: 1 },
+  { exercise_id: ex_id("Salto largo"), sets: 4, reps: 3 },
+  { exercise_id: ex_id("Sprint 5 a 10 mts"), sets: 4, reps: 3 },
+  { exercise_id: ex_id("Press banca"), sets: 4, reps: 6 }
+])
 
 bloque3 = day2.blocks.find_or_create_by!(title: "Bloque 3")
-bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Press hombre Barra en punta"), sets: 3, reps: 8)
-bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Press Banca agarre cerrado"), sets: 3, reps: 10)
-bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Trapecios"), sets: 3, reps: 15)
+bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Press hombre Barra en punta"))
+bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Press Banca agarre cerrado"))
+bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Trapecios"))
+create_weeks_for_block(bloque3, [
+  { exercise_id: ex_id("Press hombre Barra en punta"), sets: 3, reps: 8 },
+  { exercise_id: ex_id("Press Banca agarre cerrado"), sets: 3, reps: 10 },
+  { exercise_id: ex_id("Trapecios"), sets: 3, reps: 15 }
+])
 
 bloque4 = day2.blocks.find_or_create_by!(title: "Bloque 4")
-bloque4.block_exercises.find_or_create_by!(exercise_id: ex_id("Caminata Over Head barra"), sets: 2, reps: 48)
-bloque4.block_exercises.find_or_create_by!(exercise_id: ex_id("Twist Con Barra Parado"), sets: 2, reps: 16)
+bloque4.block_exercises.find_or_create_by!(exercise_id: ex_id("Caminata Over Head barra"))
+bloque4.block_exercises.find_or_create_by!(exercise_id: ex_id("Twist Con Barra Parado"))
+create_weeks_for_block(bloque4, [
+  { exercise_id: ex_id("Caminata Over Head barra"), sets: 2, reps: 48 },
+  { exercise_id: ex_id("Twist Con Barra Parado"), sets: 2, reps: 16 }
+])
 
 # === Día 3 ===
 day3 = routine.days.find_or_create_by!(name: "Día 3")
+
 bloque1 = day3.blocks.find_or_create_by!(title: "Bloque 1")
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Levantador con barra"), sets: 2, reps: 8)
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Pall Off / Fisico en hombro"), sets: 2, reps: 8)
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Pull Apart Banco plano/ en banco isometrico, el otro dinamico"), sets: 2, reps: 5)
+bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Levantador con barra"))
+bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Pall Off / Fisico en hombro"))
+bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Pull Apart Banco plano/ en banco isometrico, el otro dinamico"))
+create_weeks_for_block(bloque1, [
+  { exercise_id: ex_id("Levantador con barra"), sets: 2, reps: 8 },
+  { exercise_id: ex_id("Pall Off / Fisico en hombro"), sets: 2, reps: 8 },
+  { exercise_id: ex_id("Pull Apart Banco plano/ en banco isometrico, el otro dinamico"), sets: 2, reps: 5 }
+])
 
 bloque2 = day3.blocks.find_or_create_by!(title: "Bloque 2")
-bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Press banca"), sets: 4, reps: 1)
+bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Press banca"))
+create_weeks_for_block(bloque2, [
+  { exercise_id: ex_id("Press banca"), sets: 4, reps: 1 }
+])
 
 bloque3 = day3.blocks.find_or_create_by!(title: "Bloque 3")
-bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Lanzamientos Unilaterales de Pecho"), sets: 4, reps: 3)
-bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Flexiones de Brazos asistidas"), sets: 4, reps: 5)
-bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Press inclinado"), sets: 4, reps: 4)
+bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Lanzamientos Unilaterales de Pecho"))
+bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Flexiones de Brazos asistidas"))
+bloque3.block_exercises.find_or_create_by!(exercise_id: ex_id("Press inclinado"))
+create_weeks_for_block(bloque3, [
+  { exercise_id: ex_id("Lanzamientos Unilaterales de Pecho"), sets: 4, reps: 3 },
+  { exercise_id: ex_id("Flexiones de Brazos asistidas"), sets: 4, reps: 5 },
+  { exercise_id: ex_id("Press inclinado"), sets: 4, reps: 4 }
+])
 
 bloque4 = day3.blocks.find_or_create_by!(title: "Bloque 4")
-bloque4.block_exercises.find_or_create_by!(exercise_id: ex_id("Vueltas Combinadas"), sets: 3, reps: 8)
-bloque4.block_exercises.find_or_create_by!(exercise_id: ex_id("Vueltas Posteriores"), sets: 3, reps: 10)
+bloque4.block_exercises.find_or_create_by!(exercise_id: ex_id("Vueltas Combinadas"))
+bloque4.block_exercises.find_or_create_by!(exercise_id: ex_id("Vueltas Posteriores"))
+create_weeks_for_block(bloque4, [
+  { exercise_id: ex_id("Vueltas Combinadas"), sets: 3, reps: 8 },
+  { exercise_id: ex_id("Vueltas Posteriores"), sets: 3, reps: 10 }
+])
 
 bloque5 = day3.blocks.find_or_create_by!(title: "Bloque 5")
-bloque5.block_exercises.find_or_create_by!(exercise_id: ex_id("Plancha + Frontale + Lateral + Lateral"), sets: 3, reps: 15)
-bloque5.block_exercises.find_or_create_by!(exercise_id: ex_id("Sit Up con Mancuerna Unilateral"), sets: 2, reps: 8)
-bloque5.block_exercises.find_or_create_by!(exercise_id: ex_id("Iso hold Tabilla"), sets: 2, reps: 15)
+bloque5.block_exercises.find_or_create_by!(exercise_id: ex_id("Plancha + Frontale + Lateral + Lateral"))
+bloque5.block_exercises.find_or_create_by!(exercise_id: ex_id("Sit Up con Mancuerna Unilateral"))
+bloque5.block_exercises.find_or_create_by!(exercise_id: ex_id("Iso hold Tabilla"))
+create_weeks_for_block(bloque5, [
+  { exercise_id: ex_id("Plancha + Frontale + Lateral + Lateral"), sets: 3, reps: 15 },
+  { exercise_id: ex_id("Sit Up con Mancuerna Unilateral"), sets: 2, reps: 8 },
+  { exercise_id: ex_id("Iso hold Tabilla"), sets: 2, reps: 15 }
+])
 
 # === Día 4 ===
 day4 = routine.days.find_or_create_by!(name: "Día 4")
+
 bloque1 = day4.blocks.find_or_create_by!(title: "Bloque 1")
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Hip Thrust Unilateral"), sets: 2, reps: 4)
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Saltos Laterales (Soporte en Oblicuo Puede ser valla o Banco Plano)"), sets: 2, reps: 4)
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("drop de banco"), sets: 2, reps: 4)
-bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Sentadillas isometricas (altura de 1/4 sentadilla)"), sets: 2, reps: 2)
+bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Hip Thrust Unilateral"))
+bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Saltos Laterales (Soporte en Oblicuo Puede ser valla o Banco Plano)"))
+bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("drop de banco"))
+bloque1.block_exercises.find_or_create_by!(exercise_id: ex_id("Sentadillas isometricas (altura de 1/4 sentadilla)"))
+create_weeks_for_block(bloque1, [
+  { exercise_id: ex_id("Hip Thrust Unilateral"), sets: 2, reps: 4 },
+  { exercise_id: ex_id("Saltos Laterales (Soporte en Oblicuo Puede ser valla o Banco Plano)"), sets: 2, reps: 4 },
+  { exercise_id: ex_id("drop de banco"), sets: 2, reps: 4 },
+  { exercise_id: ex_id("Sentadillas isometricas (altura de 1/4 sentadilla)"), sets: 2, reps: 2 }
+])
 
 bloque2 = day4.blocks.find_or_create_by!(title: "Bloque 2")
-bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Saltos Continuos"), sets: 3, reps: 3)
-bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Lanzamiento por encima de la cabeza con carga"), sets: 3, reps: 3)
-bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Biceps"), sets: 2, reps: 3)
-bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Triceps"), sets: 2, reps: 3)
+bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Saltos Continuos"))
+bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Lanzamiento por encima de la cabeza con carga"))
+bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Biceps"))
+bloque2.block_exercises.find_or_create_by!(exercise_id: ex_id("Triceps"))
+create_weeks_for_block(bloque2, [
+  { exercise_id: ex_id("Saltos Continuos"), sets: 3, reps: 3 },
+  { exercise_id: ex_id("Lanzamiento por encima de la cabeza con carga"), sets: 3, reps: 3 },
+  { exercise_id: ex_id("Biceps"), sets: 2, reps: 3 },
+  { exercise_id: ex_id("Triceps"), sets: 2, reps: 3 }
+])
+
+puts "Seed data created successfully!"
 

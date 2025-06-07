@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_15_190000) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_15_190003) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -42,11 +42,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_190000) do
   create_table "block_exercises", force: :cascade do |t|
     t.integer "block_id", null: false
     t.integer "exercise_id", null: false
-    t.integer "sets"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "weeks_count", default: 1
-    t.json "weekly_reps", default: {}
     t.index ["block_id"], name: "index_block_exercises_on_block_id"
     t.index ["exercise_id"], name: "index_block_exercises_on_exercise_id"
   end
@@ -102,6 +99,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_190000) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  create_table "week_exercises", force: :cascade do |t|
+    t.integer "week_id", null: false
+    t.integer "exercise_id", null: false
+    t.integer "reps", null: false
+    t.integer "sets", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercise_id"], name: "index_week_exercises_on_exercise_id"
+    t.index ["week_id", "exercise_id"], name: "index_week_exercises_on_week_id_and_exercise_id", unique: true
+    t.index ["week_id"], name: "index_week_exercises_on_week_id"
+  end
+
+  create_table "weeks", force: :cascade do |t|
+    t.integer "block_id", null: false
+    t.integer "week_number", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["block_id", "week_number"], name: "index_weeks_on_block_id_and_week_number", unique: true
+    t.index ["block_id"], name: "index_weeks_on_block_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "block_exercises", "blocks"
@@ -109,4 +127,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_190000) do
   add_foreign_key "blocks", "days"
   add_foreign_key "days", "routines"
   add_foreign_key "sessions", "users"
+  add_foreign_key "week_exercises", "exercises"
+  add_foreign_key "week_exercises", "weeks"
+  add_foreign_key "weeks", "blocks"
 end

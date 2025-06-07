@@ -17,7 +17,7 @@ class RoutinesController < ApplicationController
   end
 
   def show
-    routine = Routine.includes(days: { blocks: :block_exercises }).find(params[:id])
+    routine = Routine.find(params[:id])
     current_week = params[:week]&.to_i || 1
     current_week = 1 if current_week < 1
     
@@ -133,6 +133,9 @@ class RoutinesController < ApplicationController
               include: {
                 block_exercises: {
                   include: :exercise
+                },
+                weeks: {
+                  include: :week_exercises
                 }
               }
             }
