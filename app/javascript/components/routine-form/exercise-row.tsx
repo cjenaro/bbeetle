@@ -5,7 +5,7 @@ import {
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import type { Exercise } from "./routine_schema";
 import { RoutineSchema } from "./routine_schema";
-import { z } from "zod";
+import { z } from "zod/v4-mini";
 
 export function ExerciseRow({
 	blockIndex,
@@ -110,6 +110,7 @@ export function ExerciseRow({
 											))}
 										</select>
 
+										<label htmlFor={exercise.sets.id}>Sets</label>
 										<input
 											{...getInputProps(exercise.sets, { type: "number" })}
 											className="input input-bordered input-sm w-16"
@@ -117,6 +118,7 @@ export function ExerciseRow({
 											min="1"
 										/>
 
+										<label htmlFor={exercise.reps.id}>Reps</label>
 										<input
 											{...getInputProps(exercise.reps, { type: "number" })}
 											className="input input-bordered input-sm w-16"

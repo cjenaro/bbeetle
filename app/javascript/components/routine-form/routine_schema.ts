@@ -1,27 +1,33 @@
-import { z } from "zod";
+import { z } from "zod/v4-mini";
+
+// Configure English locale for proper error messages
+z.config(z.locales.en());
 
 export const RoutineSchema = z.object({
-  title: z.string().min(1, { message: "Required" }),
-  description: z.string().optional(),
+  title: z.string().check(z.minLength(1, { error: "Required" })),
+  description: z.optional(z.string()),
   is_active: z.coerce.boolean(),
   days: z.array(z.object({
-    id: z.number().optional(),
-    name: z.string().min(1, { message: "Required" }),
+    id: z.optional(z.number()),
+    name: z.string().check(z.minLength(1, { error: "Required" })),
     blocks: z.array(z.object({
-      id: z.number().optional(),
-      title: z.string().min(1, { message: "Required" }),
+      id: z.optional(z.number()),
+      title: z.string().check(z.minLength(1, { error: "Required" })),
       weeks: z.array(z.object({
-        id: z.number().optional(),
-        week_number: z.coerce.number().int().min(1).max(12),
+        id: z.optional(z.number()),
+        week_number: z.coerce.number().check(
+          z.gte(1),
+          z.lte(12)
+        ),
         week_exercises: z.array(z.object({
-          id: z.number().optional(),
-          exercise_id: z.coerce.number().int().positive({ message: "Required" }),
-          sets: z.coerce.number().int().min(1, { message: "Required" }),
-          reps: z.coerce.number().int().min(1, { message: "Required" }),
-        })).min(1, { message: "Add at least one exercise" }),
-      })).min(1, { message: "Add at least one week" }),
-    })).min(1, { message: "Add at least one block" }),
-  })).min(1, { message: "Add at least one day" }),
+          id: z.optional(z.number()),
+          exercise_id: z.coerce.number().check(z.positive({ error: "Required" })),
+          sets: z.coerce.number().check(z.gte(1, { error: "Required" })),
+          reps: z.coerce.number().check(z.gte(1, { error: "Required" })),
+        })).check(z.minLength(1, { error: "Add at least one exercise" })),
+      })).check(z.minLength(1, { error: "Add at least one week" })),
+    })).check(z.minLength(1, { error: "Add at least one block" })),
+  })).check(z.minLength(1, { error: "Add at least one day" })),
 });
 
 export type Exercise = { id: number; name: string };

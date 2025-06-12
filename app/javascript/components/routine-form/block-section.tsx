@@ -2,7 +2,7 @@ import {
 	getInputProps,
 	useFormMetadata,
 } from "@conform-to/react";
-import { z } from "zod";
+import { z } from "zod/v4-mini";
 import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
 import type { Exercise } from "./routine_schema";
 import { RoutineSchema } from "./routine_schema";
