@@ -5,7 +5,7 @@ import {
 	getFormProps,
 	FormProvider,
 } from "@conform-to/react";
-import { parseWithZod } from "@conform-to/zod";
+import { parseWithZod } from "@conform-to/zod/v4";
 import { useState } from "react";
 import type { Errors } from "@inertiajs/core";
 import { router } from "@inertiajs/react";
@@ -26,12 +26,8 @@ export function RoutineForm({
 
 	const [form, fields] = useForm({
 		lastResult,
-		defaultValue: routine || {
-			title: '',
-			description: '',
-			is_active: false,
-			days: []
-		},
+		// @ts-ignore
+		defaultValue: routine,
 		onValidate({ formData }) {
 			return parseWithZod(formData, { schema: RoutineSchema });
 		},

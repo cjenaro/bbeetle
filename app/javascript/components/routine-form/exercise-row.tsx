@@ -35,7 +35,7 @@ export function ExerciseRow({
 						) : null}
 						<input 
 							{...getInputProps(week.week_number, { type: "hidden" })} 
-							value={weekIndex + 1} 
+							defaultValue={weekIndex + 1} 
 						/>
 						
 						<div className="flex items-center justify-between mb-2">
