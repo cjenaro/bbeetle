@@ -5,7 +5,8 @@ import {
 } from "@conform-to/react";
 import { z } from "zod";
 import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
-import type { Exercise, RoutineSchema } from "./types";
+import type { Exercise } from "./routine_schema";
+import { RoutineSchema } from "./routine_schema";
 import { BlockSection } from "./block-section";
 
 export function DaySection({
@@ -59,7 +60,16 @@ export function DaySection({
 							/>
 
 							<button
-								{...form.insert.getButtonProps({ name: day.blocks.name })}
+								{...form.insert.getButtonProps({ 
+									name: day.blocks.name,
+									defaultValue: { 
+										title: '', 
+										weeks: [{ 
+											week_number: 1, 
+											week_exercises: [{ exercise_id: 0, sets: 1, reps: 1 }] 
+										}] 
+									}
+								})}
 								className="btn btn-primary btn-xs mt-2"
 							>
 								<PlusIcon className="size-4" /> Block

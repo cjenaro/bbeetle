@@ -10,8 +10,8 @@ import { useState } from "react";
 import type { Errors } from "@inertiajs/core";
 import { router } from "@inertiajs/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import type { Exercise, Routine } from "./routine-form/types";
-import { RoutineSchema } from "./routine-form/types";
+import type { Exercise, Routine } from "./routine-form/routine_schema";
+import { RoutineSchema } from "./routine-form/routine_schema";
 import { DaySection } from "./routine-form/day-section";
 
 export function RoutineForm({

@@ -5,7 +5,8 @@ import {
 } from "@conform-to/react";
 import { z } from "zod";
 import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
-import type { Exercise, RoutineSchema } from "./types";
+import type { Exercise } from "./routine_schema";
+import { RoutineSchema } from "./routine_schema";
 import { ExerciseRow } from "./exercise-row";
 
 export function BlockSection({
@@ -44,28 +45,16 @@ export function BlockSection({
 									name: block.weeks.name,
 									defaultValue: { 
 										week_number: block.weeks.getFieldList().length + 1,
-										week_exercises: block.block_exercises.getFieldList().map((blockExField) => {
-											const blockEx = blockExField.getFieldset();
-											return {
-												exercise_id: blockEx.exercise_id.value || 0,
-												sets: 1,
-												reps: 1
-											};
-										})
+										week_exercises: [{
+											exercise_id: 0,
+											sets: 1,
+											reps: 1
+										}]
 									}
 								})}
-								className="btn btn-primary btn-xs mt-2"
+								className="btn btn-primary btn-xs"
 							>
 								<PlusIcon className="size-4" /> Week
-							</button>
-							<button
-								{...form.insert.getButtonProps({
-									name: block.block_exercises.name,
-									defaultValue: { exercise_id: 0 }
-								})}
-								className="btn btn-primary btn-xs mt-1"
-							>
-								<PlusIcon className="size-4" /> Exercise
 							</button>
 							<button
 								{...form.remove.getButtonProps({
@@ -81,14 +70,14 @@ export function BlockSection({
 
 						<div className="text-error">{block.title.errors}</div>
 
-						<fieldset {...getFieldsetProps(block.block_exercises)}>
-							<legend className="font-semibold mb-1">Exercises</legend>
+						<div>
+							<h3 className="font-semibold mb-2">Weeks & Exercises</h3>
 							<ExerciseRow
 								blockIndex={blockIndex}
 								dayIndex={dayIndex}
 								exercises={exercises}
 							/>
-						</fieldset>
+						</div>
 					</div>
 				);
 			})}
