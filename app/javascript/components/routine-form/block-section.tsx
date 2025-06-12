@@ -1,7 +1,6 @@
 import {
 	getInputProps,
-	getFieldsetProps,
-	type FormMetadata,
+	useFormMetadata,
 } from "@conform-to/react";
 import { z } from "zod";
 import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
@@ -12,12 +11,11 @@ import { ExerciseRow } from "./exercise-row";
 export function BlockSection({
 	dayIndex,
 	exercises,
-	form,
 }: {
 	dayIndex: number;
 	exercises: Exercise[];
-	form: FormMetadata<z.infer<typeof RoutineSchema>>;
 }) {
+	const form = useFormMetadata<z.infer<typeof RoutineSchema>>();
 	const fields = form.getFieldset();
 	const dayField = fields.days.getFieldList()[dayIndex];
 	const day = dayField.getFieldset();
