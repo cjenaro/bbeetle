@@ -55,6 +55,26 @@ export function ExerciseRow({
 									<PlusIcon className="size-3" /> Exercise
 								</button>
 								<button
+									{...form.insert.getButtonProps({
+										name: block.weeks.name,
+										index: weekIndex + 1,
+										defaultValue: {
+											week_number: weekIndex + 2,
+											week_exercises: week.week_exercises.getFieldList().map(field => {
+												const exercise = field.getFieldset();
+												return {
+													exercise_id: exercise.exercise_id.value || 0,
+													sets: exercise.sets.value || 1,
+													reps: exercise.reps.value || 1
+												};
+											})
+										}
+									})}
+									className="btn btn-secondary btn-xs"
+								>
+									<PlusIcon className="size-3" /> Clone Week
+								</button>
+								<button
 									{...form.remove.getButtonProps({
 										name: block.weeks.name,
 										index: weekIndex,
