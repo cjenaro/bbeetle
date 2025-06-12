@@ -3,6 +3,7 @@ import {
 	getInputProps,
 	getFieldsetProps,
 	getFormProps,
+	FormProvider,
 } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { useState } from "react";
@@ -50,47 +51,49 @@ export function RoutineForm({
 	});
 
 	return (
-		<form {...getFormProps(form)} className="space-y-8">
-			<div>
-				<input
-					{...getInputProps(fields.title, { type: "text" })}
-					className="input input-bordered w-full mb-2"
-					placeholder="Routine Name"
-				/>
-				<div className="text-error">{fields.title.errors}</div>
+		<FormProvider context={form.context}>
+			<form {...getFormProps(form)} className="space-y-8">
+				<div>
+					<input
+						{...getInputProps(fields.title, { type: "text" })}
+						className="input input-bordered w-full mb-2"
+						placeholder="Routine Name"
+					/>
+					<div className="text-error">{fields.title.errors}</div>
 
-				<textarea
-					{...getInputProps(fields.description, { type: "text" })}
-					className="textarea textarea-bordered w-full"
-					placeholder="Description"
-				/>
+					<textarea
+						{...getInputProps(fields.description, { type: "text" })}
+						className="textarea textarea-bordered w-full"
+						placeholder="Description"
+					/>
 
-				<div className="mt-2">
-					<label>
-						<input
-							{...getInputProps(fields.is_active, { type: "checkbox" })}
-							className="checkbox"
-						/>{" "}
-						Active
-					</label>
+					<div className="mt-2">
+						<label>
+							<input
+								{...getInputProps(fields.is_active, { type: "checkbox" })}
+								className="checkbox"
+							/>{" "}
+							Active
+						</label>
+					</div>
 				</div>
-			</div>
 
-			<fieldset {...getFieldsetProps(fields.days)}>
-				<legend className="text-xl font-semibold mb-2">Days</legend>
-				<DaySection exercises={exercises} form={form} />
+				<fieldset {...getFieldsetProps(fields.days)}>
+					<legend className="text-xl font-semibold mb-2">Days</legend>
+					<DaySection exercises={exercises} form={form} />
 
-				<button
-					{...form.insert.getButtonProps({ name: fields.days.name })}
-					className="btn btn-primary"
-				>
-					<PlusIcon className="size-4" /> Day
+					<button
+						{...form.insert.getButtonProps({ name: fields.days.name })}
+						className="btn btn-primary"
+					>
+						<PlusIcon className="size-4" /> Day
+					</button>
+				</fieldset>
+
+				<button type="submit" className="btn btn-success w-full">
+					{isEditing ? "Update Routine" : "Create Routine"}
 				</button>
-			</fieldset>
-
-			<button type="submit" className="btn btn-success w-full">
-				{isEditing ? "Update Routine" : "Create Routine"}
-			</button>
-		</form>
+			</form>
+		</FormProvider>
 	);
 }

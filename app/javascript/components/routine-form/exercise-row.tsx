@@ -1,22 +1,22 @@
 import {
+	FieldMetadata,
 	getInputProps,
-	type FormMetadata,
+	useFormMetadata,
 } from "@conform-to/react";
-import { z } from "zod";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import type { Exercise, RoutineSchema } from "./types";
+import { z } from "zod";
 
 export function ExerciseRow({
 	blockIndex,
 	dayIndex,
 	exercises,
-	form,
 }: {
 	blockIndex: number;
 	dayIndex: number;
 	exercises: Exercise[];
-	form: FormMetadata<z.infer<typeof RoutineSchema>>;
 }) {
+	const form = useFormMetadata<z.infer<typeof RoutineSchema>>()
 	const fields = form.getFieldset();
 	const dayField = fields.days.getFieldList()[dayIndex];
 	const day = dayField.getFieldset();
@@ -48,6 +48,7 @@ export function ExerciseRow({
 									</option>
 								))}
 							</select>
+							
 
 							<div className="flex justify-end">
 								<button
@@ -64,6 +65,46 @@ export function ExerciseRow({
 						</div>
 					);
 				})}
+							<Weeks blockIndex={blockIndex} dayIndex={dayIndex} />
 		</>
 	);
 } 
+
+function Weeks({ blockIndex, dayIndex }: { blockIndex: number, dayIndex: number }) {
+	const form = useFormMetadata<z.infer<typeof RoutineSchema>>()
+	const fields = form.getFieldset();
+	const dayField = fields.days.getFieldList()[dayIndex];
+	const day = dayField.getFieldset();
+	const blockField = day.blocks.getFieldList()[blockIndex];
+	const block = blockField.getFieldset();
+
+	return (
+		<>
+			{block.weeks.getFieldList().map((weekField, index) => {
+				const week = weekField.getFieldset();
+				const weekExercises = week.week_exercises.getFieldList();
+				return (
+					<div key={weekField.key}>
+						<input {...getInputProps(week.id, { type: "hidden" })} />
+						<input {...getInputProps(week.week_number, { type: "hidden" })} value={index + 1} />
+						
+						{weekExercises.map((weekExercise) => {
+							const exercise = weekExercise.getFieldset();
+							return (	
+								<div key={weekExercise.key} className="flex gap-2 mb-1">
+									<input {...getInputProps(exercise.exercise_id, { type: "hidden", value: exercise.exercise_id.value })} />
+									<input {...getInputProps(exercise.sets, { type: "number" })} className="input input-bordered input-xs size-8 appearance-none" />
+									<input {...getInputProps(exercise.reps, { type: "number" })} className="input input-bordered input-xs size-8 appearance-none" />
+								</div>
+							);
+						})}
+
+						<button className="btn btn-error btn-xs" {...form.remove.getButtonProps({ name: block.weeks.name, index: index })}>
+							<TrashIcon className="w-4 h-4" />
+						</button>
+					</div>
+				);
+			})}
+		</>
+	);
+}

@@ -26,16 +26,9 @@ type Week = {
   week_exercises: WeekExercise[];
 };
 
-type BlockExercise = {
-  id: number;
-  exercise_id: number;
-  exercise: Exercise;
-};
-
 type Block = {
   id: number;
   title: string;
-  block_exercises: BlockExercise[];
   weeks: Week[];
 };
 
@@ -168,7 +161,17 @@ function BlockComponent({
     (w) => w.week_number === selectedWeek
   );
 
-  // If no week data exists, show the block exercises without sets/reps
+  // Get all unique exercises across all weeks in this block
+  const allExercises = block.weeks
+    .flatMap((week) => week.week_exercises)
+    .reduce((acc, we) => {
+      if (!acc.find((ex) => ex.id === we.exercise.id)) {
+        acc.push(we.exercise);
+      }
+      return acc;
+    }, [] as Exercise[]);
+
+  // If no week data exists, show the exercises without sets/reps
   const hasWeekData = selectedWeekData !== undefined;
 
   return (
@@ -176,7 +179,7 @@ function BlockComponent({
       <input type="radio" name="block-accordion" />
       <div className="collapse-title font-semibold">{block.title}</div>
       <div className="collapse-content text-sm">
-        {block.block_exercises.length === 0 && <p>No exercises.</p>}
+        {allExercises.length === 0 && <p>No exercises.</p>}
         <table className="table table-zebra w-full">
           <thead>
             <tr>
@@ -187,16 +190,16 @@ function BlockComponent({
             </tr>
           </thead>
           <tbody>
-            {block.block_exercises.map((blockExercise) => {
+            {allExercises.map((exercise) => {
               // Find the week exercise for this exercise in the selected week
               const weekExercise = selectedWeekData?.week_exercises.find(
-                (we) => we.exercise_id === blockExercise.exercise_id
+                (we) => we.exercise_id === exercise.id
               );
 
               return (
                 <ExerciseRow
-                  key={blockExercise.id}
-                  blockExercise={blockExercise}
+                  key={exercise.id}
+                  exercise={exercise}
                   weekExercise={weekExercise}
                   hasWeekData={hasWeekData}
                 />
@@ -210,11 +213,11 @@ function BlockComponent({
 }
 
 function ExerciseRow({
-  blockExercise,
+  exercise,
   weekExercise,
   hasWeekData,
 }: {
-  blockExercise: BlockExercise;
+  exercise: Exercise;
   weekExercise?: WeekExercise;
   hasWeekData: boolean;
 }) {
@@ -223,7 +226,7 @@ function ExerciseRow({
   return (
     <>
       <tr className={!hasWeekData ? "opacity-50" : ""}>
-        <td>{blockExercise.exercise.name}</td>
+        <td>{exercise.name}</td>
         <td className="text-center">
           {weekExercise ? weekExercise.sets : hasWeekData ? "-" : "N/A"}
         </td>
@@ -251,13 +254,13 @@ function ExerciseRow({
         <tr>
           <td colSpan={4} className="bg-zinc-50 dark:bg-zinc-800 p-4">
             <p className="text-zinc-500 mb-2">
-              {blockExercise.exercise.description}
+              {exercise.description}
             </p>
-            {blockExercise.exercise.media_url && (
+            {exercise.media_url && (
               <div className="mt-2">
                 <img
-                  src={blockExercise.exercise.media_url}
-                  alt={blockExercise.exercise.name}
+                  src={exercise.media_url}
+                  alt={exercise.name}
                   className="max-w-xs rounded"
                 />
               </div>

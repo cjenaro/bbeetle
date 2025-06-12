@@ -12,7 +12,7 @@ class RoutinesController < ApplicationController
   end
 
   def index
-    routines = Routine.includes(days: { blocks: :block_exercises }).all
+    routines = Routine.includes(days: { blocks: { weeks: { week_exercises: :exercise } } }).all
     render inertia: 'routines/index', props: { routines: routines }
   end
 
@@ -34,7 +34,7 @@ class RoutinesController < ApplicationController
   end
 
   def edit
-    routine = Routine.includes(days: { blocks: :block_exercises }).find(params[:id])
+    routine = Routine.includes(days: { blocks: { weeks: { week_exercises: :exercise } } }).find(params[:id])
     render inertia: 'routines/edit', props: {
       routine: routine_with_nested(routine),
       exercises: Exercise.all
@@ -98,7 +98,6 @@ class RoutinesController < ApplicationController
         :id, :name, :_destroy,
         blocks: [
           :id, :title, :_destroy,
-          block_exercises: [:id, :exercise_id, :_destroy],
           weeks: [
             :id, :week_number, :_destroy,
             week_exercises: [:id, :exercise_id, :sets, :reps, :_destroy]
@@ -124,9 +123,6 @@ class RoutinesController < ApplicationController
         when "blocks"
           hash["blocks_attributes"] = hash.delete("blocks")
           deep_transform_keys_for_nested_attributes!(hash["blocks_attributes"])
-        when "block_exercises"
-          hash["block_exercises_attributes"] = hash.delete("block_exercises")
-          deep_transform_keys_for_nested_attributes!(hash["block_exercises_attributes"])
         when "weeks"
           hash["weeks_attributes"] = hash.delete("weeks")
           deep_transform_keys_for_nested_attributes!(hash["weeks_attributes"])
@@ -147,11 +143,12 @@ class RoutinesController < ApplicationController
           include: {
             blocks: {
               include: {
-                block_exercises: {
-                  include: :exercise
-                },
                 weeks: {
-                  include: :week_exercises
+                  include: {
+                    week_exercises: {
+                      include: :exercise
+                    }
+                  }
                 }
               }
             }

@@ -39,15 +39,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_190003) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "block_exercises", force: :cascade do |t|
-    t.integer "block_id", null: false
-    t.integer "exercise_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["block_id"], name: "index_block_exercises_on_block_id"
-    t.index ["exercise_id"], name: "index_block_exercises_on_exercise_id"
-  end
-
   create_table "blocks", force: :cascade do |t|
     t.integer "day_id", null: false
     t.string "title"
@@ -122,8 +113,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_190003) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "block_exercises", "blocks"
-  add_foreign_key "block_exercises", "exercises"
   add_foreign_key "blocks", "days"
   add_foreign_key "days", "routines"
   add_foreign_key "sessions", "users"
